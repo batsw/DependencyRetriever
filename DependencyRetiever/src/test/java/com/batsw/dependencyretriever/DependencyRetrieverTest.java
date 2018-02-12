@@ -40,7 +40,7 @@ public class DependencyRetrieverTest {
 	}
 	
 	@Test
-	public void testCanAllreadyAddedInstanceRetrieveElement() {
+	public void testCanRetrieveAllreadyAddedInstance() {
 		String test = "test";
 		retriever.addInstance(String.class.getName(), test);
 		String value = (String) retriever.get(String.class.getName());
@@ -71,13 +71,18 @@ public class DependencyRetrieverTest {
 		assertFalse(retriever.addInstance(key, null));
 	}
 
-	/*@Test
-	public void testCanRegissterToInstancesOfTheSameType() {
-		String key = TestClass.class.getName();
-		TestClass test1 = new TestClass();
-		TestClass test2 = new TestClass();
-		assertFalse(retriever.addInstance(key, test1));
-		assertFalse(retriever.addInstance(key, test2));
-	}*/
+	@Test
+	public void testCanRemoveAllreadyRegisteredInstance() {
+		TestClass testClass = new TestClass();
+		retriever.addInstance(TestClass.class.getName(), testClass);
+		
+		assertTrue(retriever.removeInstance(TestClass.class.getName(), testClass));
+	}
 	
+	@Test
+	public void tesCannotRemoveInstanceThatWasNotRegistered() {
+		TestClass testClass = new TestClass();
+			
+		assertFalse(retriever.removeInstance(TestClass.class.getName(), testClass));
+	}
 }

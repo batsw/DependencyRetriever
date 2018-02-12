@@ -6,22 +6,27 @@ import java.util.Map;
 public class DependencyRetriever implements IDependencyRetriever {	
 	private Map<String, Object> instances = new HashMap<String, Object>();
 	
-	public boolean addInstance(String interfaceName, Object instance){
-		if (!isValidClass(interfaceName) || instance == null) {
+	public boolean addInstance(String type, Object instance){
+		if (!isValidClass(type) || instance == null) {
 			return false;
 		}
 			
-		instances.put(interfaceName, instance);
+		instances.put(type, instance);
 		
 		return true;
 	}
 	
-	public Object get(String interfaceName){
-		if (instances.containsKey(interfaceName)){
-			return instances.get(interfaceName);	
+	public Object get(String type){
+		if (instances.containsKey(type)){
+			return instances.get(type);	
 		}
 		
 		return null;
+	}
+	
+	public boolean removeInstance(String type, Object value)
+	{
+		return instances.remove(type, value);
 	}
 	
 	protected boolean isValidClass(String type)
