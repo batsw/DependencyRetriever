@@ -1,7 +1,10 @@
 package com.batsw.dependencyretriever;
 
+import java.util.ArrayList;
+ 
 public interface IDependencyRetriever {
-	boolean addInstance(String interfaceName, Object instance);
-	Object get(String interfaceName);
-	boolean removeInstance(String type, Object value);
+	boolean add(String interfaceName, Object instance);
+	<T> T get(String interfaceName);
+	<T> ArrayList<T> getAll(String interfaceName);
+	boolean remove(String type, Object value);
 }
