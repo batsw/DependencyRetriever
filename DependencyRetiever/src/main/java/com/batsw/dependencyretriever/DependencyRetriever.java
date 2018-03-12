@@ -5,15 +5,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DependencyRetriever implements IDependencyRetriever {	
-	private Map< String, ArrayList<Object> > instances = new HashMap < String, ArrayList<Object> >();
+	private Map< String, ArrayList<IInterface> > instances = new HashMap <String, ArrayList<IInterface> >();
 	
-	public boolean add(String type, Object instance){
+	public boolean add(String type, IInterface instance){
 		if (!isValidClass(type) || instance == null) {
 			return false;
 		}
 		
 		if (!isValueInMap(type)) {
-			ArrayList<Object> array = new ArrayList<Object>();
+			ArrayList<IInterface> array = new ArrayList<IInterface>();
 			instances.put(type, array);
 		}
 		
@@ -25,9 +25,9 @@ public class DependencyRetriever implements IDependencyRetriever {
 		return false;
 	}
 	
-	public <T> T get(String type){
+	public <T extends IInterface> T get(String type){
 		if (instances.containsKey(type)){
-			Object obj = instances.get(type).get(0);
+			IInterface obj = instances.get(type).get(0);
 			T instance =  convertFromObject(obj, type);	
 			return instance;
 		}
@@ -35,29 +35,29 @@ public class DependencyRetriever implements IDependencyRetriever {
 	}
 	
 	
-	public<T> ArrayList<T> getAll(String type){		
+	public<T extends IInterface> ArrayList<T> getAll(String type){		
 		if (!instances.containsKey(type)){
 			return null; 
 		}
-		ArrayList<Object> retrievedInstance = instances.get(type);
-		ArrayList<T> instances = convertFromObjectArrayToTypeArray(retrievedInstance, type);
+		ArrayList<IInterface> retrievedInstance = instances.get(type);
+		ArrayList<T> instances = convertFromArrayToTypeArray(retrievedInstance, type);
 		return instances;
 	}
 	
-	public boolean remove(String type, Object value)
+	public boolean remove(String type, IInterface value)
 	{
 		if (isValueInMap(type)) {
-			ArrayList<Object> array = instances.get(type);
+			ArrayList<IInterface> array = instances.get(type);
 			return array.remove(value);
 		}
 		
 		return false;
 	}
 	
-	protected<T> ArrayList<T> convertFromObjectArrayToTypeArray(ArrayList<Object> objects, String type)
+	protected<T extends IInterface> ArrayList<T> convertFromArrayToTypeArray(ArrayList<IInterface> objects, String type)
 	{
 		ArrayList<T> implementations = new ArrayList<T>();
-		for( Object obj: objects) {
+		for( IInterface obj: objects) {
 			T instance = convertFromObject(obj, type);
 			if (instance ==  null)
 			{
@@ -72,11 +72,11 @@ public class DependencyRetriever implements IDependencyRetriever {
 		return implementations;
 	}
 	
-	protected <T> T convertFromObject(Object object, String type) {
+	protected <T extends IInterface> T convertFromObject(IInterface object, String type) {
 		try{
 			@SuppressWarnings("unchecked")
 			T instance = (T)object;	
-			if (instance.getClass().getName() == type)
+			if (instance.getInterfaceType() == type)
 			{
 				return instance;
 			}

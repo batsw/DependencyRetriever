@@ -20,13 +20,68 @@ public class DependencyRetrieverTest {
 	public void tearDown() throws Exception {
 	}
 	
-	public class TestClass {
+	public class TestClass implements IInterface {
+		public String getInterfaceType() {
+			return TestClass.class.getName();
+		}
+		
 		public boolean run()
 		{
 			return true;
 		}
 	}
 	
+	public class TestClass2 implements IInterface {
+		public int value;
+		public TestClass2() {
+			value = 0;
+		}
+		public TestClass2(int value_) {
+			value = value_;
+		}
+		public String getInterfaceType() {
+			return TestClass2.class.getName();
+		}
+		
+		public boolean run()
+		{
+			return true;
+		}
+	}
+	public class DependencyRetrieverTestable extends DependencyRetriever
+	{
+		public <T extends IInterface> T convertFromObject(IInterface object, String type) {
+			return super.convertFromObject(object, type);
+		}
+	}
+	
+	@Test
+	public void testCannoCastInvalidElement() {
+		DependencyRetrieverTestable retriever = new DependencyRetrieverTestable();
+		TestClass t1 = new TestClass();
+		String s = null;
+		try {
+			 s = retriever.convertFromObject(t1, TestClass.class.getName());	
+		}
+		catch (Exception e) {
+			assertNull(s);
+		}
+		
+	}
+	
+	public void testCannoCastInvalidElement1() {
+		DependencyRetrieverTestable retriever = new DependencyRetrieverTestable();
+		TestClass2 testClass = new TestClass2(7);
+		String s = retriever.convertFromObject(testClass, String.class.getName());
+		assertNull(s);
+	}
+	
+	public void testCannoCastInvalidElement2() {
+		DependencyRetrieverTestable retriever = new DependencyRetrieverTestable();
+		TestClass2 testClass = new TestClass2(7);
+		String s = retriever.convertFromObject(testClass, String.class.getName());
+		assertNull(s);
+	}
 	DependencyRetriever retriever;
 
 	@Test
@@ -36,9 +91,9 @@ public class DependencyRetrieverTest {
 	
 	@Test
 	public void testCanAddElement() {
-		String test = "test";
+		TestClass2 test = new TestClass2();
 		
-		assertTrue(retriever.add(String.class.getName(), test));
+		assertTrue(retriever.add(TestClass2.class.getName(), test));
 	}
 	
 	@Test
@@ -67,11 +122,11 @@ public class DependencyRetrieverTest {
 	
 	@Test
 	public void testCanGetAddedInstance() {
-		String test = "test";
-		retriever.add(String.class.getName(), test);
-		String value = (String) retriever.get(String.class.getName());
+		TestClass2 test = new TestClass2(444);
+		retriever.add(TestClass2.class.getName(), test);
+		TestClass2 value =  retriever.get(TestClass2.class.getName());
 		
-		assertEquals(test, value);
+	assertEquals(test.value, value.value);
 	}
 	
 	@Test
@@ -104,7 +159,7 @@ public class DependencyRetrieverTest {
 	
 	@Test
 	public void testNulIsReturnedIfInstanceIsNotRegistered(){
-		String value = (String) retriever.get(String.class.getName());
+		TestClass2 value = retriever.get(TestClass2.class.getName());
 		
 		assertNull(value);
 	}
